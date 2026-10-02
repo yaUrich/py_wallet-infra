@@ -37,8 +37,12 @@ backup activation, restore rehearsal and recovery limits.
 Same-repository pull requests are validated before auto-merge is enabled. The
 workflow renders every Kustomize root with pinned Kustomize, validates built-in
 Kubernetes resources and repository CRDs with pinned Kubeconform/catalog
-versions, rejects mutable `:latest` images, and rejects plaintext Kubernetes
-`Secret` resources.
+versions, rejects plaintext Kubernetes `Secret` resources, and enforces the
+GitOps image policy. Application images may only come from the three approved
+`ghcr.io/amysyutin/py_wallet-*` repositories and must use a full 40-character
+lowercase Git SHA. The only non-application images are the explicitly pinned
+`postgres:16` and `amazon/aws-cli:2.32.8` images. Adding an image requires an
+intentional policy and test update in the same pull request.
 
 For the local render and policy checks, install Kustomize and run:
 
@@ -46,6 +50,7 @@ For the local render and policy checks, install Kustomize and run:
 rendered_dir="$(mktemp -d)"
 scripts/render-manifests.sh "${rendered_dir}"
 scripts/check-manifest-policy.sh "${rendered_dir}"
+python3 -m unittest tests/test_image_policy.py
 ```
 
 Kubeconform runs in CI because schema validation downloads the pinned schema

@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/amysyutin/py_wallet-api:ef68d3a1ed2f49162e57a477731692636a1dd0bd
+        - name: database
+          image: postgres:16
+        - name: backup
+          image: amazon/aws-cli:2.32.8
