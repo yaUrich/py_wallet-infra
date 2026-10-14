@@ -66,6 +66,9 @@ jobs:
       - name: Enforce repository manifest policy
         run: scripts/check-manifest-policy.sh "${RUNNER_TEMP}/rendered"
 
+      - name: Test image policy
+        run: python3 -m unittest tests/test_image_policy.py
+
       - name: Validate Grafana dashboard contract
         run: python3 scripts/check-grafana-dashboard.py
 

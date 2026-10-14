@@ -19,6 +19,10 @@ if grep -R -n -E '^[[:space:]]*image:[[:space:]].*:latest([[:space:]]|$)' "${ren
   failed=1
 fi
 
+if ! python3 "$(dirname "$0")/check_image_policy.py" "${rendered_directory}"; then
+  failed=1
+fi
+
 if grep -R -n -E '^kind:[[:space:]]+Secret[[:space:]]*$' "${rendered_directory}"; then
   echo "plaintext Kubernetes Secret resources are forbidden; use SealedSecret" >&2
   failed=1
