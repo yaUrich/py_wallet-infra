@@ -94,6 +94,9 @@ module "rds" {
   allowed_security_group_id = aws_security_group.ec2_ssh.id
   db_name                   = "pywallet"
   username                  = "pywallet"
+  backup_retention_period   = 0
+  deletion_protection       = false
+  skip_final_snapshot       = true
 
   tags = local.common_tags
 }

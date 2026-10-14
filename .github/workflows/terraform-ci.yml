@@ -41,7 +41,15 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.6.0"
+          terraform_version: "1.16.3"
+
+      - name: Check remote-state backend isolation
+        run: python3 scripts/check-terraform-backends.py
+        working-directory: .
+
+      - name: Check RDS environment profiles
+        run: python3 scripts/check-rds-profiles.py
+        working-directory: .
 
       - name: Terraform fmt (check)
         working-directory: terraform

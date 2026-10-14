@@ -40,6 +40,41 @@ variable "allocated_storage" {
   default     = 20
 }
 
+variable "backup_retention_period" {
+  description = "Number of days to retain automated backups; zero disables backups"
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.backup_retention_period >= 0 && var.backup_retention_period <= 35
+    error_message = "backup_retention_period must be between 0 and 35 days."
+  }
+}
+
+variable "deletion_protection" {
+  description = "Prevent deletion of the RDS instance until an operator explicitly disables protection"
+  type        = bool
+  default     = false
+}
+
+variable "skip_final_snapshot" {
+  description = "Whether deletion skips the final DB snapshot"
+  type        = bool
+  default     = true
+}
+
+variable "final_snapshot_identifier" {
+  description = "Unique snapshot name to use when skip_final_snapshot is false"
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition     = var.skip_final_snapshot || (var.final_snapshot_identifier != null && length(trimspace(var.final_snapshot_identifier)) > 0)
+    error_message = "final_snapshot_identifier is required when skip_final_snapshot is false."
+  }
+}
+
 variable "tags" {
   description = "Common tags for RDS resources"
   type        = map(string)

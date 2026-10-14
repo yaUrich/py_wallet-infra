@@ -18,14 +18,14 @@ Internet
 │    └─ RDS PostgreSQL (SG → EC2 SG only) │
 └─────────────────────────────────────────┘
 
-State: S3 (pywallet-dev-tfstate) + DynamoDB lock
+State: a dedicated S3 bucket and DynamoDB lock table per environment.
 ```
 
 ## Layout
 
 | Path | Role |
 |------|------|
-| `bootstrap/` | S3 + DynamoDB for remote state (apply once) |
+| `bootstrap/` | S3 + DynamoDB for one environment's remote state (apply once per environment) |
 | `modules/network` | VPC, IGW, public/private subnets, route tables |
 | `modules/ec2` | EC2 instance |
 | `modules/rds` | PostgreSQL + SG-to-SG + random password |
@@ -34,18 +34,27 @@ State: S3 (pywallet-dev-tfstate) + DynamoDB lock
 
 ## Prerequisites
 
-- Terraform `>= 1.6`
-- AWS CLI profile `pywallet-dev`
+- Terraform `>= 1.6` locally; CI uses the pinned Terraform 1.16.3 release
+- AWS CLI profiles `pywallet-dev` and `pywallet-stage` (or equivalent named profiles configured locally)
 - EC2 key pair in AWS
 - `my_ip_cidr` in `terraform.tfvars` (never commit real tfvars)
 
-## Bootstrap (once)
+## Bootstrap remote state
 
 ```bash
 cd terraform/bootstrap
 terraform init
 terraform apply
 ```
+
+The default bootstrap values create the dev backend. To create the isolated
+stage backend, use the non-secret example file:
+
+```bash
+terraform apply -var-file=stage.tfvars.example
+```
+
+Do not create the stage backend by reusing the dev bucket or lock table.
 
 ## Dev lifecycle
 
@@ -68,6 +77,10 @@ terraform plan
 ```
 
 Use a different VPC CIDR than `dev` if both environments run at the same time.
+Stage uses `pywallet-stage-tfstate`, `pywallet-stage-tf-lock`, and the
+`pywallet-stage` AWS profile. Follow the
+[state-backend migration runbook](docs/stage-backend-migration.md) before
+switching an existing stage state to the new backend.
 
 ## CI
 
@@ -75,6 +88,8 @@ GitHub Actions (`.github/workflows/terraform-ci.yml`):
 
 - `terraform fmt -check`
 - `terraform init -backend=false` + `validate` (matrix: `dev`, `stage`)
+- `scripts/check-terraform-backends.py` rejects shared buckets, keys, lock
+  tables, profiles, and environment defaults
 - `tflint`
 - `checkov` (`soft_fail: true`)
 
@@ -92,4 +107,4 @@ Requires `tflint` on `PATH` for the local tflint hook.
 - SSH only from `my_ip_cidr` `/32`
 - RDS: `publicly_accessible = false`, access via SG → SG
 - State encrypted in S3; secrets in state are not masked by `sensitive` alone
-- RDS is configured for cheap ephemeral environments (`backup_retention_period = 0`, `skip_final_snapshot = true`, `deletion_protection = false`); tighten these for long-lived deployments
+- Dev RDS remains ephemeral (`backup_retention_period = 0`, `skip_final_snapshot = true`, `deletion_protection = false`). Stage retains automated backups for seven days, blocks deletion, and requires a final snapshot if protection is deliberately disabled.

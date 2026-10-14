@@ -2,7 +2,10 @@
 
 Creates a private PostgreSQL RDS instance with DB subnet group, SG-to-SG ingress, and a generated master password.
 
-Configured for ephemeral environments by default: `skip_final_snapshot = true`, `backup_retention_period = 0`, `deletion_protection = false`. Tighten for long-lived deployments.
+The module exposes explicit backup, deletion-protection and final-snapshot
+controls. Its defaults remain suitable for ephemeral environments. Long-lived
+environments must set a non-zero retention period, enable deletion protection,
+and provide a unique final snapshot identifier.
 
 ## Requirements
 
@@ -46,10 +49,14 @@ No modules.
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_allocated_storage"></a> [allocated\_storage](#input\_allocated\_storage) | Allocated storage in GB | `number` | `20` | no |
+| <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | Number of days to retain automated backups; zero disables backups | `number` | `0` | no |
 | <a name="input_allowed_security_group_id"></a> [allowed\_security\_group\_id](#input\_allowed\_security\_group\_id) | Security group ID allowed to connect to RDS | `string` | n/a | yes |
 | <a name="input_db_name"></a> [db\_name](#input\_db\_name) | Initial PostgreSQL database name | `string` | n/a | yes |
+| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Prevent deletion of the RDS instance until an operator explicitly disables protection | `bool` | `false` | no |
+| <a name="input_final_snapshot_identifier"></a> [final\_snapshot\_identifier](#input\_final\_snapshot\_identifier) | Unique snapshot name to use when skip_final_snapshot is false | `string` | `null` | no |
 | <a name="input_instance_class"></a> [instance\_class](#input\_instance\_class) | RDS instance class | `string` | `"db.t4g.micro"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Prefix for RDS resource name | `string` | n/a | yes |
+| <a name="input_skip_final_snapshot"></a> [skip\_final\_snapshot](#input\_skip\_final\_snapshot) | Whether deletion skips the final DB snapshot | `bool` | `true` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Private subnet IDs for the DB subnet group | `list(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Common tags for RDS resources | `map(string)` | `{}` | no |
 | <a name="input_username"></a> [username](#input\_username) | Master username for PostgreSQL | `string` | n/a | yes |

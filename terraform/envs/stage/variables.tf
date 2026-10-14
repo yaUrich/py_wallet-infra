@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "aws_profile" {
   description = "AWS CLI profile name"
   type        = string
-  default     = "pywallet-dev"
+  default     = "pywallet-stage"
 }
 
 variable "project" {
@@ -19,7 +19,7 @@ variable "project" {
 variable "environment" {
   description = "Environment tag value"
   type        = string
-  default     = "dev"
+  default     = "stage"
 }
 
 variable "owner" {
@@ -31,7 +31,7 @@ variable "owner" {
 variable "key_name" {
   description = "Existing AWS EC2 key pair name"
   type        = string
-  default     = "pywallet-dev-key"
+  default     = "pywallet-stage-key"
 }
 
 variable "instance_type" {

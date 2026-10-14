@@ -63,9 +63,11 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = [aws_security_group.this.id]
   publicly_accessible    = false
 
-  skip_final_snapshot     = true
-  deletion_protection     = false
-  backup_retention_period = 0
+  backup_retention_period   = var.backup_retention_period
+  deletion_protection       = var.deletion_protection
+  skip_final_snapshot       = var.skip_final_snapshot
+  final_snapshot_identifier = var.skip_final_snapshot ? null : var.final_snapshot_identifier
+  copy_tags_to_snapshot     = true
 
   tags = merge(
     var.tags,

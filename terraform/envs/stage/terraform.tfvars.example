@@ -1,11 +1,11 @@
 aws_region    = "ap-southeast-1"
-aws_profile   = "pywallet-dev"
+aws_profile   = "pywallet-stage"
 
 project       = "pywallet"
 environment   = "stage"
 owner         = "alex"
 
-key_name      = "pywallet-dev-key"
+key_name      = "pywallet-stage-key"
 instance_type = "t3.micro"
 
 my_ip_cidr    = "203.0.113.10/32"
