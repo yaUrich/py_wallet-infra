@@ -1,0 +1,104 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: py-wallet-runtime
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app.kubernetes.io/part-of: py-wallet
+    app.kubernetes.io/component: gitops-policy
+spec:
+  description: Runtime applications for py_wallet services and data workloads.
+  sourceRepos:
+    - https://github.com/amysyutin/py_wallet-infra.git
+  destinations:
+    - namespace: py-wallet-dev
+      server: https://kubernetes.default.svc
+    - namespace: py-wallet-data
+      server: https://kubernetes.default.svc
+  clusterResourceBlacklist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ServiceAccount
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: batch
+      kind: CronJob
+    - group: batch
+      kind: Job
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: policy
+      kind: PodDisruptionBudget
+    - group: cert-manager.io
+      kind: Certificate
+    - group: monitoring.coreos.com
+      kind: ServiceMonitor
+    - group: bitnami.com
+      kind: SealedSecret
+    - group: traefik.io
+      kind: Middleware
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: py-wallet-cluster
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app.kubernetes.io/part-of: py-wallet
+    app.kubernetes.io/component: gitops-policy
+spec:
+  description: Cluster bootstrap resources required by py_wallet.
+  sourceRepos:
+    - https://github.com/amysyutin/py_wallet-infra.git
+  destinations:
+    - namespace: "*"
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: cert-manager.io
+      kind: ClusterIssuer
+  namespaceResourceBlacklist:
+    - group: "*"
+      kind: "*"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: py-wallet-observability
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app.kubernetes.io/part-of: py-wallet
+    app.kubernetes.io/component: gitops-policy
+spec:
+  description: Observability stack and its explicitly approved Helm chart privileges.
+  sourceRepos:
+    - https://github.com/amysyutin/py_wallet-infra.git
+    - https://prometheus-community.github.io/helm-charts
+    - https://grafana.github.io/helm-charts
+    - https://grafana-community.github.io/helm-charts
+  destinations:
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

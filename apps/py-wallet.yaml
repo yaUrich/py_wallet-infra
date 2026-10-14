@@ -4,13 +4,14 @@ metadata:
   name: py-wallet
   namespace: argocd
 spec:
-  project: default
+  project: py-wallet-runtime
   source:
     path: manifests/app
     repoURL: https://github.com/amysyutin/py_wallet-infra.git
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
+    namespace: py-wallet-dev
   syncPolicy:
     automated:
       prune: true

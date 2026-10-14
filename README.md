@@ -6,7 +6,7 @@ GitOps repository for the **py_wallet** project: Kubernetes manifests and Argo C
 
 | Area | Status | Current state | Next step |
 |---|---|---|---|
-| GitOps | Done | Argo CD app-of-apps, pull-based deploy | AppProject hardening |
+| GitOps | Done | Argo CD app-of-apps with scoped AppProjects | Review project privileges when adding a new Application |
 | CI/CD | Done | GHCR image by SHA, validated infra bump PR | Image signing / SBOM |
 | Kubernetes runtime | Done | Probes, resources, API/frontend PDB, singleton snapshot policy | HPA after a load baseline |
 | Database migrations | Done | Argo CD PreSync Alembic Job | Expand/contract migration policy |
@@ -31,6 +31,8 @@ See [`docs/alerting.md`](docs/alerting.md) for the runtime alert thresholds,
 triage steps and SLO validation boundary.
 See [`docs/postgres-backup-restore.md`](docs/postgres-backup-restore.md) for
 backup activation, restore rehearsal and recovery limits.
+See [`docs/argocd-projects.md`](docs/argocd-projects.md) for AppProject
+boundaries, approved repositories and the process for extending privileges.
 
 ## Pull request validation
 

@@ -4,13 +4,14 @@ metadata:
   name: postgres
   namespace: argocd
 spec:
-  project: default
+  project: py-wallet-runtime
   source:
     path: manifests/postgres
     repoURL: https://github.com/amysyutin/py_wallet-infra.git
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
+    namespace: py-wallet-data
   syncPolicy:
     automated:
       prune: true
